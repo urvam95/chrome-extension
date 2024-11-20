@@ -1,32 +1,39 @@
-// import { useState } from 'react'
-
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg
-import { APIProvider, Map } from '@vis.gl/react-google-maps'
-// import { LoadScript, GoogleMap } from '@react-google-maps/api'
 import './App.css'
+import { AdvancedMarker, APIProvider, ControlPosition, Map, MapControl, useAdvancedMarkerRef  } from '@vis.gl/react-google-maps'
+import {useState } from 'react';
+import PlaceAutoComplete from './placeAutoComplete';
+import MapHandler from './MapHandler';
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyDAFTIzTFVb5A0L2cfIuIC7RprXbtYaFiE";
 function App() {
-  // const [count, setCount] = useState(0)
+  
+  const Initial_Position = {
+    defaultCenter: { lat: -33.860664, lng: 151.208138 },
+    defaultZoom: 12,
+    mapId: "8a0f5b037eeac55a"
+  }
+
+  const [cameraProps, setCameraProps] = useState(Initial_Position);
+  const [markerRef, setMarkerRef] = useAdvancedMarkerRef();
+
+  function handleCameraChange() {
+    setCameraProps();
+  }
 
   return (
-    // <LoadScript googleMapsApiKey= {GOOGLE_MAPS_API_KEY} onLoad={()=>console.log("map has loaded")}>
-    //   <div style={{height: "100vh"}}>
+    <APIProvider  apiKey={GOOGLE_MAPS_API_KEY} onLoad={()=>console.log("Map loaded")}>
+      <div style={{ width : "100vw",height: "100vh" }}>
+        <Map {...Initial_Position} onCameraChanged={handleCameraChange}>
+          <AdvancedMarker ref={markerRef} position={null}/>
+        </Map>
+        <MapControl position={ControlPosition.LEFT_TOP}>
+          <div className="autocomplete_control">
+            <PlaceAutoComplete onPlaceSelect={setCameraProps}/>
 
-    //   <GoogleMap
-    //     center={{ lat: 53.5, lng: 10 }}
-    //     zoom={9}
-    //     />
-    //   </div>
+          </div>
 
-
-    // </LoadScript>
-    <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
-      <div style={{ height: "100vh" }}>
-        <Map center={{ lat: 53.5, lng: 10 }}
-          zoom={9}
-        />
+        </MapControl>
+        <MapHandler place={cameraProps } marker={setMarkerRef} /> 
       </div>
     </APIProvider>
 
